@@ -46,9 +46,9 @@ To start the backend server
 npm start
 ```
 
-To start the frontend application, run the following command in the `frontend ` directory
+To start the frontend application, run the following command in the `frontend` directory
 
 ```bash
-# cd ../frontend
+# cd ../
 npx http-server ./frontend
 ```
