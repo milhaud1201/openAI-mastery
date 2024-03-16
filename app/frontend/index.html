@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Video-transcriber</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
+
+    <style>
+      #transcribedText {
+        overflow: scroll;
+      }
+      #transcriptionProgressBar {
+        visibility: hidden;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container py-5">
+      <div class="row">
+        <div class="col-lg-6">
+          <h2>Preview Video</h2>
+          <video id="videoPreview" controls class="w-100"></video>
+          <h2 class="mt-4">Uploaded Video</h2>
+          <input type="file" class="form-control-file" id="videoUpload" />
+          <div class="progress" id="transcriptionProgressBar">
+            <div
+              class="progress-bar progress-bar-striped progress-bar-animated"
+              role="progressbar"
+              style="width: 100%"
+            ></div>
+          </div>
+          <button
+            id="transcribeButtom"
+            type="button"
+            class="btn btn-outline-dark"
+          >
+            Transcribe
+          </button>
+        </div>
+        <dir class="col-lg-6" style="margin: 0%;">
+          <h2>Transcribed Text</h2>
+          <textarea
+            class="form-control"
+            id="transcribedText"
+            rows="20"
+          ></textarea>
+        </dir>
+      </div>
+    </div>
+
+    <!-- Import Axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script>
+      const videoUpload = document.getElementById("videoUpload");
+      const videoPreview = document.getElementById("videoPreview");
+      const transcribeButtom = document.getElementById("transcribeButtom");
+      const transcribedText = document.getElementById("transcribedText");
+      const transcriptionProgressBar = document.getElementById(
+        "transcriptionProgressBar",
+      );
+
+      let selectedFile;
+
+      videoUpload.addEventListener("change", function (e) {
+        if (e.target.files && e.target.files.length > 0) {
+          selectedFile = e.target.files[0];
+          let selectedVideo = URL.createObjectURL(selectedFile);
+
+          videoPreview.src = selectedVideo;
+        }
+      });
+
+      async function transcribeVideo() {
+        let formData = new FormData();
+
+        formData.append("file", selectedFile);
+
+        transcriptionProgressBar.style.visibility = "visible";
+
+        try {
+          let response = await axios.post(
+            "http://localhost:1330/transcribe",
+            formData,
+            {
+              headers: { "Content-Type": "multipart/form-data" },
+            },
+          );
+
+          if (response.data) {
+            displayTranscription(response);
+          }
+
+          transcriptionProgressBar.style.visibility = "hidden";
+        } catch (error) {
+          console.log(error);
+
+          transcriptionProgressBar.style.visibility = "hidden";
+
+          alert("Video Transcription Failed");
+        }
+      }
+
+      transcribeButtom.addEventListener("click", transcribeVideo);
+
+      function displayTranscription(response) {
+        transcribedText.value = response.data.text;
+      }
+    </script>
+  </body>
+</html>

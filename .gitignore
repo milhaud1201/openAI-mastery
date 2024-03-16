@@ -1,0 +1,29 @@
+# Node.js environment
+node_modules/
+package-lock.json
+
+# Backend
+app/backend/uploads/
+
+# Frontend
+app/frontend/public/node_modules/
+
+# Editor config files
+.vscode/
+.idea/
+
+# Test related
+coverage/
+
+# Deployment related
+.env
+dist/
+
+# Others
+*.log
+*.tmp
+*.pid
+
+# OS specific temporary files
+Thumbs.db
+.DS_Store
